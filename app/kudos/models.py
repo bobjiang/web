@@ -189,11 +189,9 @@ class Token(SuperModel):
 
     @property
     def gen(self):
-        if self.pk == self.cloned_from_id:
-            return 0
-        if not self.cloned_from_id:
-            return 0
-        return Token.objects.get(pk=self.cloned_from_id).gen + 1
+        if self.num_clones_allowed > 0:
+            return 1
+        return 2
 
     def __str__(self):
         """Return the string representation of a model."""
@@ -221,7 +219,7 @@ class Token(SuperModel):
             try:
                 obj_data = obj.read()
                 if obj_data:
-                    image = pyvips.Image.new_from_file(obj.name)
+                    image = pyvips.Image.new_from_file(obj.name, scale=2)
                     return BytesIO(image.write_to_buffer(f'.png'))
             except VipsError:
                 pass
